@@ -1,4 +1,4 @@
-# Simulador de ascensor regenerativo (Proyecto 10 – G5)
+# Simulador de ascensor regenerativo (Proyecto G5)
 
 Caso de estudio: edificio de 20 paradas (75 m, 2,5 m/s, 1,0 m/s²), cabina de 950 kg,
 carga nominal de 1000 kg, contrapeso equilibrado al 50 % (1450 kg) o al 30 % (1250 kg)
