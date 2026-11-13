@@ -1,0 +1,7 @@
+# Python 3.10 o superior
+numpy>=2.0
+pandas>=2.2
+streamlit>=1.40
+plotly>=5.24
+matplotlib>=3.9   # solo figuras.py (figuras estáticas del artículo)
+scipy>=1.13       # opcional: solo para el contraste de validación
