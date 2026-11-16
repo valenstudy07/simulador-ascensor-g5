@@ -13,6 +13,8 @@ from modelo import Params
 from simulacion import simular
 from energia import barrido_masa, interpretar, J_POR_WH
 import validacion as val
+from dia_tipico import dia
+from parametros import ISO
 
 WH = J_POR_WH
 st.set_page_config(page_title="Ascensor regenerativo · Caso 1", layout="wide")
@@ -85,7 +87,7 @@ def correr(p, metodo, dt):
 res = {k: correr(replace(base, m_pasajeros=float(m)), metodo, dt) for k, m in escenarios.items()}
 
 tabs = st.tabs(["Animación", "Cinemática y potencia", "Balance de energía", "Caso 1: 30 % vs 50 %",
-                "Barrido de masa", "Euler vs RK4", "Validación"])
+                "Día típico (ISO 25745-2)", "Barrido de masa", "Euler vs RK4", "Validación"])
 
 # ---------------- Animación ----------------
 with tabs[0]:
@@ -204,8 +206,43 @@ with tabs[3]:
     st.caption("Con 30 % se gasta menos con cabina vacía o poco cargada (lo más frecuente) y más con cabina llena. "
                "Qué opción ahorra en el día depende del patrón de tráfico del edificio.")
 
-# ---------------- Barrido de masa ----------------
+# ---------------- Día típico ----------------
 with tabs[4]:
+    st.markdown("Consumo diario con el perfil de uso de la ISO 25745-2: viaje medio de "
+                f"{ISO['pct_S']:.0f} % del recorrido con la carga media de la categoría, la mitad de los viajes "
+                "subiendo y la otra mitad bajando, más el consumo en reposo el resto del día. "
+                "Usa los datos fijos del caso (no los controles de la barra lateral).")
+    cA, cB = st.columns(2)
+    cat = cA.radio("Categoría de uso", [3, 4, 5], index=1, horizontal=True,
+                   format_func=lambda c: f"{c} ({ISO['viajes_dia'][c]} viajes/día)")
+    eta_d = cB.slider("Eficiencia η del día típico", 0.70, 0.85, CASO["eta_motor"], 0.01)
+
+    @st.cache_data
+    def dias(cat_, eta_):
+        return {(reg, f): dia(f, cat_, reg, eta_) for reg in (True, False) for f in (0.5, 0.3)}
+
+    D = dias(cat, eta_d)
+    filas = []
+    for (reg, f), d in D.items():
+        filas.append({"Configuración": f"CW {int(f*100)} % · {'con' if reg else 'sin'} regeneración",
+                      "En marcha (kWh/día)": d["E_marcha"], "En reposo (kWh/día)": d["E_reposo"],
+                      "Total (kWh/día)": d["E_dia"]})
+    dfd = pd.DataFrame(filas)
+    fig = go.Figure()
+    fig.add_bar(x=dfd["Configuración"], y=dfd["En marcha (kWh/día)"], name="En marcha")
+    fig.add_bar(x=dfd["Configuración"], y=dfd["En reposo (kWh/día)"], name="En reposo")
+    fig.add_hline(y=CASO["Ed_50_Wh_dia"] / 1000, line=dict(dash="dash"), annotation_text="Fuente 50 %")
+    fig.add_hline(y=CASO["Ed_30_Wh_dia"] / 1000, line=dict(dash="dot"), annotation_text="Fuente 30 %")
+    fig.update_layout(barmode="stack", yaxis_title="kWh/día", height=450)
+    st.plotly_chart(fig, width="stretch")
+    st.dataframe(dfd.style.format({c: "{:.2f}" for c in dfd.columns[1:]}), hide_index=True)
+    d4 = D[(True, 0.5)]
+    st.caption(f"Viaje medio: {d4['s_av']:.0f} m con {d4['carga']:.0f} kg, {d4['T']:.1f} s · "
+               f"{d4['n_d']} viajes/día · reposo medio {d4['P_reposo']:.0f} W durante {24-d4['t_marcha_h']:.1f} h. "
+               "Las líneas punteadas son los valores de la fuente del caso.")
+
+# ---------------- Barrido de masa ----------------
+with tabs[5]:
     masas = np.linspace(0, capacidad * 1.2, 25)
 
     @st.cache_data
@@ -234,7 +271,7 @@ with tabs[4]:
                "o bajando con más carga que m*, el ascensor devuelve energía (si el variador es regenerativo).")
 
 # ---------------- Euler vs RK4 ----------------
-with tabs[5]:
+with tabs[6]:
     k = st.selectbox("Escenario", list(escenarios), key="m")
     p = replace(base, m_pasajeros=float(escenarios[k]))
     ref = simular(p, "RK4", 0.001)                    # solución de referencia de paso pequeño
@@ -257,7 +294,7 @@ with tabs[5]:
     st.write(f"τ = {p.tau:.3f} s · dt/τ = {dt/p.tau:.2f} · Euler es estable solo si dt < 2τ = {2*p.tau:.3f} s.")
 
 # ---------------- Validación ----------------
-with tabs[6]:
+with tabs[7]:
     st.markdown("Caso con solución analítica: escalón de velocidad (v_ref constante) con la misma ecuación del modelo.  \n"
                 r"$v(t)=v_0\,(1-e^{-t/\tau}),\qquad \tau=\dfrac{m_{ef}}{K_p+b}$")
     p = replace(base, m_pasajeros=float(escenarios["A"]))

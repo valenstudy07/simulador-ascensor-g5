@@ -37,3 +37,16 @@ CASO = {
 }
 
 CASO["h_piso"] = CASO["recorrido"] / (CASO["n_paradas"] - 1)  # ≈ 3.95 m
+
+# --- Día típico según ISO 25745-2 (FUENTE: norma, datos recopilados por Linda) ---
+# Categoría de uso -> viajes por día (n_d) y carga media %Q para 801-1275 kg de carga nominal
+ISO = {
+    "categoria": 4,             # edificio de oficinas de 20 paradas
+    "viajes_dia": {3: 300, 4: 750, 5: 1500},   # n_d representativo de cada categoría
+    "pct_Q": {3: 4.5, 4: 6.0, 5: 11.0},        # % de la carga nominal en cabina, en promedio
+    "pct_S": 44.0,              # % del recorrido total que cubre un viaje medio (>3 paradas)
+    "P_id": 500.0,              # W, potencia en reposo inmediatamente después de un viaje
+    "P_st": 120.0,              # W, potencia en espera (standby) pasados 5 min
+    "R_id": 0.45,               # fracción del tiempo sin viajes en reposo "idle"
+    "R_st": 0.55,               # fracción del tiempo sin viajes en "standby"
+}

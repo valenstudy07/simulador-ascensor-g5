@@ -95,5 +95,30 @@ ax.set_xlabel("Masa de pasajeros (kg)"); ax.set_ylabel("Energía neta (Wh)   (<0
 ax.set_title("Condición de recuperación según carga y sentido"); ax.legend(fontsize=7)
 fig.tight_layout(); fig.savefig(OUT / "fig_barrido_masa.png"); plt.close(fig)
 
+# 6. Día típico (ISO 25745-2): marcha + reposo, con y sin regeneración
+from dia_tipico import dia
+filas = []
+for reg in (True, False):
+    for frac in (0.5, 0.3):
+        d = dia(frac, regenerativo=reg)
+        filas.append({"contrapeso_%": int(frac * 100), "regenerativo": reg, "viajes_dia": d["n_d"],
+                      "viaje_medio_m": round(d["s_av"], 1), "carga_media_kg": round(d["carga"]),
+                      "E_marcha_kWh": round(d["E_marcha"], 2), "E_reposo_kWh": round(d["E_reposo"], 2),
+                      "E_dia_kWh": round(d["E_dia"], 2)})
+td = pd.DataFrame(filas)
+td.to_csv(OUT / "tabla_dia_tipico.csv", index=False)
+fig, ax = plt.subplots(figsize=(5, 3.3))
+etiquetas = [f"{r.contrapeso_}%\n{'con' if r.regenerativo else 'sin'} regen." for r in td.rename(columns={"contrapeso_%": "contrapeso_"}).itertuples()]
+ax.bar(etiquetas, td["E_marcha_kWh"], label="En marcha")
+ax.bar(etiquetas, td["E_reposo_kWh"], bottom=td["E_marcha_kWh"], label="En reposo")
+ax.axhline(CASO["Ed_50_Wh_dia"] / 1000, ls="--", c="k", lw=0.8)
+ax.axhline(CASO["Ed_30_Wh_dia"] / 1000, ls=":", c="k", lw=0.8)
+ax.text(3.45, CASO["Ed_50_Wh_dia"] / 1000, " fuente 50 %", va="bottom", ha="right", fontsize=7)
+ax.text(3.45, CASO["Ed_30_Wh_dia"] / 1000, " fuente 30 %", va="bottom", ha="right", fontsize=7)
+ax.set_ylabel("Energía (kWh/día)"); ax.set_title("Día típico, categoría de uso 4 (750 viajes/día)")
+ax.legend(fontsize=7, loc="upper left")
+fig.tight_layout(); fig.savefig(OUT / "fig_dia_tipico.png"); plt.close(fig)
+
 print("Figuras y tablas guardadas en", OUT)
+print(td.to_string(index=False))
 print(t.to_string(index=False))

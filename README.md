@@ -1,4 +1,4 @@
-# Simulador de ascensor regenerativo (Proyecto G5)
+# Simulador de ascensor regenerativo (Proyecto 10 – G5)
 
 Caso de estudio: edificio de 20 paradas (75 m, 2,5 m/s, 1,0 m/s²), cabina de 950 kg,
 carga nominal de 1000 kg, contrapeso equilibrado al 50 % (1450 kg) o al 30 % (1250 kg)
@@ -9,6 +9,7 @@ según ISO 25745. Todos los valores están en `parametros.py`.
     pip install -r requirements.txt
     streamlit run app.py      # simulador interactivo
     python validacion.py      # tabla de errores Euler/RK4, orden de convergencia y contraste con SciPy
+    python dia_tipico.py      # consumo de un día típico (kWh/día) según el perfil de uso de la ISO 25745-2
     python figuras.py         # figuras PNG y tablas CSV para el artículo (carpeta figuras/)
 
 ## Archivos
@@ -22,13 +23,14 @@ según ISO 25745. Todos los valores están en `parametros.py`.
 | simulacion.py | Une modelo + método + balance. |
 | validacion.py | Solución analítica, errores, influencia del paso, convergencia, contraste con solve_ivp. |
 | app.py | Interfaz Streamlit + Plotly. |
+| dia_tipico.py | Consumo diario: viajes y carga media de la ISO 25745-2 + consumo en reposo. |
 | figuras.py | Figuras estáticas Matplotlib y tablas CSV. |
 
 ## Limitaciones conocidas (declarar en el artículo)
 
 - El perfil de velocidad es trapezoidal: no incluye el jerk de 1,25 m/s³ del caso.
-- Calcula la energía por viaje; no incluye consumo en reposo (stand-by) ni patrón de tráfico diario,
-  por lo que no se compara directamente con los Wh/día de la fuente.
+- El día típico usa un solo viaje medio (33 m, carga media 60 kg) como la ISO 25745-2, no una
+  distribución real de viajes y cargas. Las potencias de reposo son valores típicos de la norma.
 - b, I_polea_eq y Kp son supuestos; la eficiencia (0,85) está dentro del rango 70–85 % de las fuentes.
 
 ## Publicar

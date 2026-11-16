@@ -1,0 +1,5 @@
+contrapeso_%,regenerativo,viajes_dia,viaje_medio_m,carga_media_kg,E_marcha_kWh,E_reposo_kWh,E_dia_kWh
+50,True,750,33.0,60,5.66,6.03,11.69
+30,True,750,33.0,60,3.48,6.03,9.51
+50,False,750,33.0,60,17.93,6.03,23.96
+30,False,750,33.0,60,10.06,6.03,16.1
