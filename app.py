@@ -102,15 +102,23 @@ with tabs[0]:
         idx.append(len(B["t"]) - 1)
     E_neta = B["E_red_neta"] / WH
 
+    alto = max(2.5, 0.85 * h_piso)          # alto de las cajas (m)
+    XC, XW = (0.0, 0.8), (2.2, 2.8)         # posición horizontal de cabina y contrapeso
+
+    def caja(x, y0_, color, nombre):
+        return go.Scatter(x=[x[0], x[0], x[1], x[1], x[0]], y=[y0_, y0_ + alto, y0_ + alto, y0_, y0_],
+                          fill="toself", mode="lines", line=dict(color="#333"), fillcolor=color, name=nombre)
+
     def cuadro(i):
         ycab = y0 + B["y"][i]
         ycw = H - ycab
         estado = "regenera" if B["P"][i] < 0 else "consume"
+        cable = go.Scatter(x=[sum(XC) / 2, sum(XC) / 2, sum(XW) / 2, sum(XW) / 2],
+                           y=[ycab + alto, H + 4, H + 4, ycw + alto], mode="lines+markers",
+                           marker=dict(size=[0, 9, 9, 0], color="#555"),
+                           line=dict(color="#888", width=1.5), name="cable")
         return go.Frame(
-            data=[go.Scatter(x=[0, 0, 1, 1, 0], y=[ycab, ycab + 2.2, ycab + 2.2, ycab, ycab],
-                             fill="toself", line=dict(color="#333"), fillcolor="#9ecae1"),
-                  go.Scatter(x=[3, 3, 4, 4, 3], y=[ycw, ycw + 2.2, ycw + 2.2, ycw, ycw],
-                             fill="toself", line=dict(color="#333"), fillcolor="#bdbdbd")],
+            data=[cable, caja(XC, ycab, "#9ecae1", "cabina"), caja(XW, ycw, "#bdbdbd", "contrapeso")],
             name=str(i),
             layout=go.Layout(title=f"t = {B['t'][i]:.1f} s | v = {B['v'][i]:+.2f} m/s | "
                                    f"P = {B['P'][i]/1e3:+.1f} kW ({estado}) | neto acumulado = {E_neta[i]:+.1f} Wh"))
@@ -118,7 +126,11 @@ with tabs[0]:
     fig = go.Figure(data=cuadro(0).data, frames=[cuadro(i) for i in idx])
     for j in range(n_pisos):
         fig.add_hline(y=j * h_piso, line=dict(color="#ddd", width=1))
-    fig.update_layout(xaxis=dict(range=[-1, 5], visible=False), yaxis=dict(range=[-1, H + 4], title="Altura (m)"),
+    fig.add_annotation(x=sum(XC) / 2, y=-2.5, text="Cabina", showarrow=False)
+    fig.add_annotation(x=sum(XW) / 2, y=-2.5, text="Contrapeso", showarrow=False)
+    fig.add_annotation(x=(sum(XC) + sum(XW)) / 4, y=H + 6.5, text="Polea motriz", showarrow=False)
+    fig.update_layout(xaxis=dict(range=[-11, 14], visible=False),
+                      yaxis=dict(range=[-4, H + 9], title="Altura (m)"),
                       showlegend=False, height=650,
                       updatemenus=[dict(type="buttons", buttons=[
                           dict(label="▶ Play", method="animate",
