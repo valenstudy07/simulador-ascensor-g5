@@ -31,7 +31,7 @@ if sb.button("↺ Restablecer valores del caso"):
 
 sb.header("Edificio y recorrido")
 n_pisos = sb.slider("Número de paradas", 2, 40, CASO["n_paradas"])
-h_piso = sb.number_input("Altura entre paradas (m)", 2.0, 6.0, round(CASO["h_piso"], 2), 0.05)
+h_piso = sb.number_input("Altura entre paradas (m)", 2.0, 6.0, CASO["h_piso"], 0.05, format="%.3f")
 sb.markdown("**Condiciones iniciales:** la cabina parte del reposo en el piso inicial.")
 piso_ini = sb.slider("Piso inicial", 0, n_pisos - 1, 0)
 piso_fin = sb.slider("Piso final", 0, n_pisos - 1, n_pisos - 1)
