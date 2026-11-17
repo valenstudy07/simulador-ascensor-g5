@@ -221,7 +221,7 @@ with tabs[3]:
 # ---------------- Día típico ----------------
 with tabs[4]:
     st.markdown("Consumo diario con el perfil de uso de la ISO 25745-2: viaje medio de "
-                f"{ISO['pct_S']:.0f} % del recorrido con la carga media de la categoría, la mitad de los viajes "
+                "49, 44 o 39 % del recorrido (categorías 3, 4 y 5) con la carga media de la categoría, la mitad de los viajes "
                 "subiendo y la otra mitad bajando, más el consumo en reposo el resto del día. "
                 "Usa los datos fijos del caso (no los controles de la barra lateral).")
     cA, cB = st.columns(2)
