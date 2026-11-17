@@ -42,7 +42,7 @@ sb.header("Ascensor")
 m_cab = sb.number_input("Masa de cabina (kg)", 300.0, 3000.0, CASO["m_cabina"], 10.0)
 capacidad = sb.number_input("Carga nominal (kg)", 200.0, 3000.0, CASO["carga_nominal"], 10.0)
 opcion_cw = sb.radio("Equilibrado del contrapeso",
-                     ["50 % (tradicional)", "30 % (ISO 25745)", "Personalizado"])
+                     ["50 % (tradicional)", "30 % (optimizado)", "Personalizado"])
 if opcion_cw.startswith("50"):
     factor_cw = 0.5
 elif opcion_cw.startswith("30"):
@@ -200,7 +200,7 @@ with tabs[3]:
             for m in cargas_:
                 fila = {"Contrapeso": f"{int(frac*100)} % ({q0.m_contrapeso:.0f} kg)", "Carga (kg)": m}
                 for nombre, (a, c) in {"Sube (Wh)": (0, base_.n_pisos - 1), "Baja (Wh)": (base_.n_pisos - 1, 0)}.items():
-                    R = simular(replace(q0, m_pasajeros=m, piso_ini=a, piso_fin=c), "RK4", 0.02)
+                    R = simular(replace(q0, m_pasajeros=m, piso_ini=a, piso_fin=c), "RK4", 0.01)
                     fila[nombre] = R["E_red_neta"][-1] / WH
                 fila["Ida y vuelta (Wh)"] = fila["Sube (Wh)"] + fila["Baja (Wh)"]
                 filas.append(fila)
@@ -264,7 +264,7 @@ with tabs[5]:
             q0 = replace(base_, m_contrapeso=base_.m_cabina + frac * base_.capacidad)
             for nombre, (a, c) in {"sube": (0, base_.n_pisos - 1), "baja": (base_.n_pisos - 1, 0)}.items():
                 out[(frac, nombre)] = barrido_masa(replace(q0, piso_ini=a, piso_fin=c), masas_,
-                                                   lambda pp: simular(pp, "RK4", 0.02))
+                                                   lambda pp: simular(pp, "RK4", 0.01))
         return out
 
     S = barrido(base, masas)

@@ -30,8 +30,8 @@ según ISO 25745. Todos los valores están en `parametros.py`.
 
 - El perfil de velocidad es trapezoidal: no incluye el jerk de 1,25 m/s³ del caso.
 - El día típico usa un solo viaje medio (33 m, carga media 60 kg) como la ISO 25745-2, no una
-  distribución real de viajes y cargas. Las potencias de reposo son valores típicos de la norma.
-- b, I_polea_eq y Kp son supuestos; la eficiencia (0,85) está dentro del rango 70–85 % de las fuentes.
+  distribución real de viajes y cargas. Las potencias de reposo son las de un ejemplo de cálculo de la norma, no mediciones.
+- b, I_polea_eq y Kp son supuestos; la eficiencia (0,85) es un supuesto, del orden del 78 % de la máquina de la fuente.
 
 ## Publicar
 

@@ -26,7 +26,7 @@ DT = 0.01
 def viaje_medio(frac_cw, categoria=None, regenerativo=True, eta=None):
     """Energía neta (Wh) de un viaje medio subiendo y bajando, y su duración (s)."""
     cat = ISO["categoria"] if categoria is None else categoria
-    s_av = ISO["pct_S"] / 100 * CASO["recorrido"]
+    s_av = ISO["pct_S"][cat] / 100 * CASO["recorrido"]
     carga = ISO["pct_Q"][cat] / 100 * CASO["carga_nominal"]
     base = Params(m_contrapeso=CASO["m_cabina"] + frac_cw * CASO["carga_nominal"],
                   m_pasajeros=carga, h_piso=s_av, n_pisos=2, regenerativo=regenerativo)

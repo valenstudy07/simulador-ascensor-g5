@@ -1,8 +1,7 @@
 """Parámetros del CASO DE ESTUDIO (única fuente de valores para código y documento).
 
 Caso 1: edificio de 20 paradas con contrapeso equilibrado al 50 % vs. 30 % de la carga
-nominal (artículo sobre optimización de la eficiencia energética según ISO 25745,
-fuente del cuaderno del grupo).
+nominal (estudio técnico de Montanari Group sobre optimización de la eficiencia energética según ISO 25745, publicado en Interempresas).
 
 IMPORTANTE: verificar cada valor marcado "FUENTE" contra el documento original antes
 de citarlo en el artículo. Los marcados "SUPUESTO" deben declararse como tales.
@@ -11,7 +10,7 @@ de citarlo en el artículo. Los marcados "SUPUESTO" deben declararse como tales.
 G = 9.81  # m/s^2
 
 CASO = {
-    # --- Datos del edificio y del ascensor (FUENTE: artículo ISO 25745) ---
+    # --- Datos del caso: masas, carga y recorrido de la fuente (Montanari); paradas, velocidad, aceleración y jerk del ejemplo de la ISO 25745-2 (Elevator World) ---
     "n_paradas": 20,            # paradas (piso 0 a 19)
     "recorrido": 75.0,          # m, recorrido total
     "v_nominal": 2.5,           # m/s
@@ -25,7 +24,7 @@ CASO = {
     "Ed_30_Wh_dia": 18352.0,    # Wh/día reportados al 30 % (clase A)
     "ahorro_kWh_anio": 2819.0,  # kWh/año reportados
 
-    # --- Eficiencias (FUENTE: rango 70-85 % reportado para variador + inversor regenerativo) ---
+    # --- Eficiencia (SUPUESTO: 0,85; del orden del 78 % de la máquina de la fuente) ---
     "eta_motor": 0.85,
     "eta_regen": 0.85,
 
@@ -38,13 +37,13 @@ CASO = {
 
 CASO["h_piso"] = CASO["recorrido"] / (CASO["n_paradas"] - 1)  # ≈ 3.95 m
 
-# --- Día típico según ISO 25745-2 (FUENTE: norma, datos recopilados por Linda) ---
+# --- Día típico: perfil de uso de la ISO 25745-2 y potencias de reposo del ejemplo de cálculo (Elevator World) ---
 # Categoría de uso -> viajes por día (n_d) y carga media %Q para 801-1275 kg de carga nominal
 ISO = {
     "categoria": 4,             # edificio de oficinas de 20 paradas
     "viajes_dia": {3: 300, 4: 750, 5: 1500},   # n_d representativo de cada categoría
     "pct_Q": {3: 4.5, 4: 6.0, 5: 11.0},        # % de la carga nominal en cabina, en promedio
-    "pct_S": 44.0,              # % del recorrido total que cubre un viaje medio (>3 paradas)
+    "pct_S": {3: 49.0, 4: 44.0, 5: 39.0},              # % del recorrido total que cubre un viaje medio (>3 paradas)
     "P_id": 500.0,              # W, potencia en reposo inmediatamente después de un viaje
     "P_st": 120.0,              # W, potencia en espera (standby) pasados 5 min
     "R_id": 0.45,               # fracción del tiempo sin viajes en reposo "idle"
